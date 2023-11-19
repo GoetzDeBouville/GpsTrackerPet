@@ -2,8 +2,11 @@ package com.hellcorp.gpstrackerpet
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.hellcorp.gpstrackerpet.databinding.ActivityMainBinding
+import com.hellcorp.gpstrackerpet.fragments.MainFragment
+import com.hellcorp.gpstrackerpet.fragments.SettingsFragment
+import com.hellcorp.gpstrackerpet.fragments.ViewTrackFragment
+import com.hellcorp.gpstrackerpet.utils.openFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -12,14 +15,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         provideClickListeners()
+        openFragment(MainFragment.newInstance())
     }
 
     private fun provideClickListeners() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
-                R.id.item_home -> Log.e("MainActivity", "item_home")
-                R.id.item_tracks -> Log.e("MainActivity", "item_tracks")
-                R.id.item_settings -> Log.e("MainActivity", "item_settings")
+                R.id.item_home -> openFragment(MainFragment.newInstance())
+                R.id.item_tracks -> openFragment(ViewTrackFragment.newInstance())
+                R.id.item_settings -> openFragment(SettingsFragment.newInstance())
             }
             true
         }
