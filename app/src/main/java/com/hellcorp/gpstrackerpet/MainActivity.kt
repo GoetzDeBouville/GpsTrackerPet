@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             when(it.itemId) {
                 R.id.item_home -> openFragment(MainFragment.newInstance())
                 R.id.item_tracks -> openFragment(ViewTrackFragment.newInstance())
-                R.id.item_settings -> openFragment(SettingsFragment.newInstance())
+                R.id.item_settings -> openFragment(SettingsFragment())
             }
             true
         }
