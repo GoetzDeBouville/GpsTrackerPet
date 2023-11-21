@@ -11,4 +11,20 @@
         <item>5000</item>
         <item>10000</item>
     </string-array>
+
+    <string-array name="color_name">
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Yellow</item>
+        <item>Red</item>
+        <item>Black</item>
+    </string-array>
+
+    <string-array name="color_value">
+        <item>#2962FF</item>
+        <item>#00C853</item>
+        <item>#FFD600</item>
+        <item>#D50000</item>
+        <item>#FF000000</item>
+    </string-array>
 </resources>
