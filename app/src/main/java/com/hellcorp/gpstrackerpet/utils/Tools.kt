@@ -16,9 +16,11 @@ fun Fragment.openFragment(f: Fragment) {
 }
 
 fun AppCompatActivity.openFragment(f: Fragment) {
-    supportFragmentManager
-        .beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-        .replace(R.id.placeHolder, f).commit()
+    if (supportFragmentManager.fragments.isEmpty() || supportFragmentManager.fragments[0].javaClass != f.javaClass) {
+        supportFragmentManager
+            .beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+            .replace(R.id.placeHolder, f).commit()
+    }
 }
 
 fun showSnackbar(

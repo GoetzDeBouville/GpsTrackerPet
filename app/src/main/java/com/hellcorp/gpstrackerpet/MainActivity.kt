@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun provideClickListeners() {
         binding.bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.item_home -> openFragment(MainFragment.newInstance())
                 R.id.item_tracks -> openFragment(ViewTrackFragment.newInstance())
                 R.id.item_settings -> openFragment(SettingsFragment())

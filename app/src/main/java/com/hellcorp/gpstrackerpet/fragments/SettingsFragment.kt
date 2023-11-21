@@ -33,7 +33,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun onChangeListener(): OnPreferenceChangeListener {
         return OnPreferenceChangeListener { preference, newValue ->
-            when(preference.key) {
+            when (preference.key) {
                 TIME_KEY -> onTimeChange(newValue.toString())
                 COLOR_TRACK_KEY -> preference.icon?.setTint(Color.parseColor(newValue.toString()))
             }
@@ -41,19 +41,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun onTimeChange(newValue : String) {
+    private fun onTimeChange(newValue: String) {
         val nameArray = resources.getStringArray(R.array.loc_time_update_name)
         val valueArray = resources.getStringArray(R.array.loc_time_update_value)
-        val title  = timePref?.title.toString().substringBefore(":")
+        val title = timePref?.title.toString().substringBefore(":")
         timePref?.title = "$title: ${nameArray[valueArray.indexOf(newValue)]}"
     }
 
-    private fun initPrefs(){
+    private fun initPrefs() {
         val preference = timePref!!.preferenceManager.sharedPreferences
         val nameArray = resources.getStringArray(R.array.loc_time_update_name)
         val valueArray = resources.getStringArray(R.array.loc_time_update_value)
-        val title  = timePref!!.title
-        timePref!!.title = "$title: ${nameArray[valueArray.indexOf(preference?.getString(TIME_KEY, UPDATE_TIME_3_SEC))]}"
+        val title = timePref!!.title
+        timePref!!.title = "$title: ${
+            nameArray[valueArray.indexOf(
+                preference?.getString(
+                    TIME_KEY,
+                    UPDATE_TIME_3_SEC
+                )
+            )]
+        }"
 
         val trackColor = preference?.getString(COLOR_TRACK_KEY, DEFAULT_COLOR)
         colorPref?.icon?.setTint(Color.parseColor(trackColor))
