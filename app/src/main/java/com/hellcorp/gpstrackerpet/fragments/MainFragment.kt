@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
+import org.osmdroid.util.GeoPoint
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -18,9 +19,14 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        initOsm() // инициализация open street map обязательно до проприсовки фрагмента
+        setOsm() // инициализация open street map обязательно до проприсовки фрагмента
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initOsm()
     }
 
     override fun onDestroyView() {
@@ -28,10 +34,15 @@ class MainFragment : Fragment() {
         _binding = null
     }
 
-    private fun initOsm() {
+    private fun setOsm() {
         Configuration.getInstance()
             .load(requireContext(), activity?.getSharedPreferences(OSM_KEY, Context.MODE_PRIVATE))
         Configuration.getInstance().userAgentValue = BuildConfig.LIBRARY_PACKAGE_NAME
+    }
+
+    private fun initOsm() = with(binding){
+        map.controller.setZoom(20.0)
+        map.controller.animateTo(GeoPoint(40.4167, -3.70325))
     }
 
     companion object {
