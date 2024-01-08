@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
+import com.hellcorp.gpstrackerpet.utils.DialogManager
 import com.hellcorp.gpstrackerpet.utils.checkPermission
 import com.hellcorp.gpstrackerpet.utils.showSnackbar
 import org.osmdroid.config.Configuration
@@ -110,10 +111,11 @@ class MainFragment : Fragment() {
     }
 
     private fun checkLocationEnabled() {
-        val locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =
+            activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (isEnabled == false) {
-            showSnackbar(binding.map, "GPS adapter is desabled", requireContext())
+        if (!isEnabled) {
+            DialogManager.showLocationEnableDialog(requireContext())
         }
     }
 
