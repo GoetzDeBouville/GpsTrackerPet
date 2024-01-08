@@ -1,6 +1,7 @@
 package com.hellcorp.gpstrackerpet.utils
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -11,15 +12,24 @@ import com.hellcorp.gpstrackerpet.R
 
 fun Fragment.openFragment(f: Fragment) {
     (activity as AppCompatActivity).supportFragmentManager
-        .beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+        .beginTransaction()
+        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
         .replace(R.id.placeHolder, f).commit()
 }
 
 fun AppCompatActivity.openFragment(f: Fragment) {
     if (supportFragmentManager.fragments.isEmpty() || supportFragmentManager.fragments[0].javaClass != f.javaClass) {
         supportFragmentManager
-            .beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+            .beginTransaction()
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .replace(R.id.placeHolder, f).commit()
+    }
+}
+
+fun Fragment.checkPermission(permission: String): Boolean {
+    return when (PackageManager.PERMISSION_GRANTED) {
+        ContextCompat.checkSelfPermission(requireActivity(), permission) -> true
+        else -> false
     }
 }
 

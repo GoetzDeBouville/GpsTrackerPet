@@ -1,34 +1,41 @@
 package com.hellcorp.gpstrackerpet.fragments
 
+import android.Manifest
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
+import com.hellcorp.gpstrackerpet.utils.checkPermission
+import com.hellcorp.gpstrackerpet.utils.showSnackbar
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class MainFragment : Fragment() {
+    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        setOsm() // инициализация open street map обязательно до проприсовки фрагмента
+        setOsm() // инициализация open street map обязательно до прорисовки фрагмента
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initOsm()
+        registerPermissions()
+        checkLocationPermission()
     }
 
     override fun onDestroyView() {
@@ -51,6 +58,51 @@ class MainFragment : Fragment() {
         locationOverlay.runOnFirstFix {
             map.overlays.clear()
             map.overlays.add(locationOverlay)
+        }
+    }
+
+    private fun registerPermissions() {
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+                if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                    initOsm()
+                } else {
+                    showSnackbar(binding.map, "No location access permission!", requireContext())
+                }
+            }
+    }
+
+    private fun checkLocationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            checkLocationPermissionVersionQPlus()
+        } else {
+            checkLocationPermissionBelowVersionQ()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun checkLocationPermissionVersionQPlus() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        ) {
+            initOsm()
+        } else {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                )
+            )
+        }
+    }
+
+    private fun checkLocationPermissionBelowVersionQ() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            initOsm()
+        } else {
+            permissionLauncher.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+            )
         }
     }
 
