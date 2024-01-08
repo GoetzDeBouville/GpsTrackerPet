@@ -10,6 +10,8 @@ import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -40,9 +42,16 @@ class MainFragment : Fragment() {
         Configuration.getInstance().userAgentValue = BuildConfig.LIBRARY_PACKAGE_NAME
     }
 
-    private fun initOsm() = with(binding){
+    private fun initOsm() = with(binding) {
         map.controller.setZoom(20.0)
-        map.controller.animateTo(GeoPoint(40.4167, -3.70325))
+        val locationProvider = GpsMyLocationProvider(activity)
+        val locationOverlay = MyLocationNewOverlay(locationProvider, map)
+        locationOverlay.enableMyLocation()
+        locationOverlay.enableFollowLocation()
+        locationOverlay.runOnFirstFix {
+            map.overlays.clear()
+            map.overlays.add(locationOverlay)
+        }
     }
 
     companion object {
