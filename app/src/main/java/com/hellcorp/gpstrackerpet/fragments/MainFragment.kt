@@ -2,6 +2,7 @@ package com.hellcorp.gpstrackerpet.fragments
 
 import android.Manifest
 import android.content.Context
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -86,6 +87,7 @@ class MainFragment : Fragment() {
             checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         ) {
             initOsm()
+            checkLocationEnabled()
         } else {
             permissionLauncher.launch(
                 arrayOf(
@@ -99,10 +101,19 @@ class MainFragment : Fragment() {
     private fun checkLocationPermissionBelowVersionQ() {
         if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             initOsm()
+            checkLocationEnabled()
         } else {
             permissionLauncher.launch(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
             )
+        }
+    }
+
+    private fun checkLocationEnabled() {
+        val locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (isEnabled == false) {
+            showSnackbar(binding.map, "GPS adapter is desabled", requireContext())
         }
     }
 
