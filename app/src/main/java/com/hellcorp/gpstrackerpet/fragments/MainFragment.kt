@@ -2,9 +2,11 @@ package com.hellcorp.gpstrackerpet.fragments
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,12 +39,16 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
-        checkLocationPermission()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkLocationPermission()
     }
 
     private fun setOsm() {
@@ -115,7 +121,12 @@ class MainFragment : Fragment() {
             activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if (!isEnabled) {
-            DialogManager.showLocationEnableDialog(requireContext())
+            DialogManager.showLocationEnableDialog(requireContext(),
+                object : DialogManager.Listener {
+                    override fun onClick() {
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    }
+                })
         }
     }
 
