@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
+import com.hellcorp.gpstrackerpet.location.LocationService
 import com.hellcorp.gpstrackerpet.utils.DialogManager
 import com.hellcorp.gpstrackerpet.utils.checkPermission
 import com.hellcorp.gpstrackerpet.utils.showSnackbar
@@ -39,6 +40,11 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity?.startForegroundService(Intent(activity, LocationService::class.java))
+        } else {
+            activity?.startService((Intent(activity, LocationService::class.java)))
+        }
     }
 
     override fun onDestroyView() {
