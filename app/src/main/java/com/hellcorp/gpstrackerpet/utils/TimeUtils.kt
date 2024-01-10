@@ -7,7 +7,7 @@ import java.util.TimeZone
 
 object TimeUtils {
     @SuppressLint("SimpleDateFormat")
-    private val timeFormatter = SimpleDateFormat("HH:mm:ss")
+    private val timeFormatter = SimpleDateFormat("HH:mm:ss:SS")
 
     fun getTime(timestamp: Long): String {
         val calendar = Calendar.getInstance()
