@@ -34,7 +34,7 @@
         app:rippleColor="#00FFFFFF" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_start_track"
+        android:id="@+id/btn_start_stop_track"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"

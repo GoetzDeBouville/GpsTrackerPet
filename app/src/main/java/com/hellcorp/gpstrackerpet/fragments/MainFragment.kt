@@ -7,6 +7,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.hellcorp.gpstrackerpet.R
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
 import com.hellcorp.gpstrackerpet.location.LocationService
 import com.hellcorp.gpstrackerpet.utils.DialogManager
@@ -25,6 +27,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class MainFragment : Fragment() {
+    private var isServiceLocationEnabled = false
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
@@ -37,16 +40,6 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        registerPermissions()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity?.startForegroundService(Intent(activity, LocationService::class.java))
-        } else {
-            activity?.startService((Intent(activity, LocationService::class.java)))
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -55,6 +48,54 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkLocationPermission()
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        registerPermissions()
+        setOnClickListener()
+        checkServiceState()
+    }
+
+    private fun setOnClickListener() = with(binding) {
+        val listener = onClickListener()
+        btnCenter.setOnClickListener(listener)
+        btnStartStopTrack.setOnClickListener(listener)
+    }
+
+    private fun onClickListener() = View.OnClickListener {
+        when (it) {
+            binding.btnCenter -> Log.i("MyLog", "btnCenter clicked")
+            binding.btnStartStopTrack -> startStopService()
+        }
+    }
+
+    private fun startStopService() {
+        if (isServiceLocationEnabled) {
+            activity?.stopService(Intent(activity, LocationService::class.java))
+            binding.btnStartStopTrack.setImageResource(R.drawable.ic_start_track_24)
+        } else {
+            binding.btnStartStopTrack.setImageResource(R.drawable.ic_pause_track_24)
+            startLocationService()
+        }
+        isServiceLocationEnabled = !isServiceLocationEnabled
+    }
+
+    private fun startLocationService() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity?.startForegroundService(Intent(activity, LocationService::class.java))
+        } else {
+            activity?.startService((Intent(activity, LocationService::class.java)))
+        }
+    }
+
+    private fun checkServiceState() {
+        isServiceLocationEnabled = LocationService.isRuning
+
+        if (isServiceLocationEnabled) {
+            binding.btnStartStopTrack.setImageResource(R.drawable.ic_pause_track_24)
+        }
     }
 
     private fun setOsm() {
