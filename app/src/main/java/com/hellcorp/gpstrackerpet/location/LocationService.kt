@@ -60,5 +60,6 @@ class LocationService : Service() {
     companion object {
         const val CHANEL_ID = "chanel_1"
         var isRuning = false
+        var startTime = 0L
     }
 }

@@ -88,7 +88,7 @@ class MainFragment : Fragment() {
     private fun startTimer() {
         timer?.cancel()
         timer = Timer()
-        startTime = System.currentTimeMillis()
+        startTime = LocationService.startTime
         timer?.schedule(object : TimerTask() {
             override fun run() {
                 activity?.runOnUiThread {
@@ -114,6 +114,7 @@ class MainFragment : Fragment() {
         } else {
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_pause_track_24)
             startLocationService()
+            LocationService.startTime = System.currentTimeMillis()
             startTimer()
         }
         isServiceLocationEnabled = !isServiceLocationEnabled
@@ -132,6 +133,7 @@ class MainFragment : Fragment() {
 
         if (isServiceLocationEnabled) {
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_pause_track_24)
+            startTimer()
         }
     }
 
