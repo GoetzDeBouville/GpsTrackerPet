@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.gson.Gson
 import com.hellcorp.gpstrackerpet.MainActivity
 import com.hellcorp.gpstrackerpet.R
 import org.osmdroid.util.GeoPoint
@@ -78,8 +79,10 @@ class LocationService : Service() {
     }
 
     private fun sendLocationData(locationModel: LocationModel) {
+        val gson = Gson()
+        val locationModelJson = gson.toJson(locationModel)
         val intent = Intent(LOCATION_MODEL_INTENT)
-        intent.putExtra(LOCATION_MODEL_INTENT, locationModel)
+        intent.putExtra(LOCATION_MODEL_INTENT, locationModelJson)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
     }
 

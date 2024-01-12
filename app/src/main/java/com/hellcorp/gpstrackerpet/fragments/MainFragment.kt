@@ -1,8 +1,10 @@
 package com.hellcorp.gpstrackerpet.fragments
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -14,10 +16,14 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.gson.Gson
 import com.hellcorp.gpstrackerpet.R
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
+import com.hellcorp.gpstrackerpet.location.LocationModel
 import com.hellcorp.gpstrackerpet.location.LocationService
 import com.hellcorp.gpstrackerpet.utils.DialogManager
 import com.hellcorp.gpstrackerpet.utils.TimeUtils
@@ -64,6 +70,7 @@ class MainFragment : Fragment() {
         setOnClickListener()
         checkServiceState()
         updateTimeTV()
+        registerLocReciever()
     }
 
     private fun setOnClickListener() = with(binding) {
@@ -214,6 +221,23 @@ class MainFragment : Fragment() {
                     }
                 })
         }
+    }
+
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == LocationService.LOCATION_MODEL_INTENT) {
+                val locationModelJson = intent.getStringExtra(LocationService.LOCATION_MODEL_INTENT)
+                val gson = Gson()
+                val locationModel = gson.fromJson(locationModelJson, LocationModel::class.java)
+                Log.i("MainMyLog", "locationModel = $locationModelJson \n\nlocation data distance = ${locationModel.distance}\n\nvelocity = ${locationModel.velocity} \n\ngeoPointList = ${locationModel.geoPointList}")
+            }
+        }
+    }
+
+    private fun registerLocReciever() {
+        val intentFilter = IntentFilter(LocationService.LOCATION_MODEL_INTENT)
+        LocalBroadcastManager.getInstance(activity as AppCompatActivity)
+            .registerReceiver(broadcastReceiver, intentFilter)
     }
 
     companion object {
