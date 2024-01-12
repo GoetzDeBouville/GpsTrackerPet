@@ -18,9 +18,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
+import com.hellcorp.gpstrackerpet.MainViewModel
 import com.hellcorp.gpstrackerpet.R
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
 import com.hellcorp.gpstrackerpet.location.LocationModel
@@ -40,7 +42,7 @@ class MainFragment : Fragment() {
     private var isServiceLocationEnabled = false
     private var timer: Timer? = null
     private var startTime = 0L
-    private val timeData = MutableLiveData<String>()
+    private val viewModel: MainViewModel by activityViewModels()
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
@@ -71,6 +73,7 @@ class MainFragment : Fragment() {
         checkServiceState()
         updateTimeTV()
         registerLocReciever()
+        updateLocation()
     }
 
     private fun setOnClickListener() = with(binding) {
@@ -87,10 +90,29 @@ class MainFragment : Fragment() {
     }
 
     private fun updateTimeTV() {
-        timeData.observe(viewLifecycleOwner) {
+        viewModel.timeData.observe(viewLifecycleOwner) {
             binding.tvTime.text = it
         }
     }
+
+    private fun updateLocation() = with(binding) {
+        viewModel.locationUpdates.observe(viewLifecycleOwner) {
+            tvDistance.text = formatDistance(it.distance)
+            tvCurrentVelocity.text =
+                getString(R.string.speed, String.format("%.1f", it.velocity * 3.6))
+        }
+    }
+
+    private fun formatDistance(distance: Float): String {
+        val distanceFormat = if (distance < 1000f) {
+            getString(R.string.distance_meter, String.format("%.1f", distance))
+        } else {
+            getString(R.string.distance_kilometer, String.format("%.1f", distance / 1000))
+        }
+
+        return distanceFormat
+    }
+
 
     private fun startTimer() {
         timer?.cancel()
@@ -99,7 +121,7 @@ class MainFragment : Fragment() {
         timer?.schedule(object : TimerTask() {
             override fun run() {
                 activity?.runOnUiThread {
-                    timeData.value = getCurrentTime()
+                    viewModel.timeData.value = getCurrentTime()
                 }
             }
         }, 10, 10)
@@ -229,7 +251,7 @@ class MainFragment : Fragment() {
                 val locationModelJson = intent.getStringExtra(LocationService.LOCATION_MODEL_INTENT)
                 val gson = Gson()
                 val locationModel = gson.fromJson(locationModelJson, LocationModel::class.java)
-                Log.i("MainMyLog", "locationModel = $locationModelJson \n\nlocation data distance = ${locationModel.distance}\n\nvelocity = ${locationModel.velocity} \n\ngeoPointList = ${locationModel.geoPointList}")
+                viewModel.locationUpdates.value = locationModel
             }
         }
     }

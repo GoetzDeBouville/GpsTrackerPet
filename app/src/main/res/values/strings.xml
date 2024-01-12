@@ -8,4 +8,7 @@
     <string name="location">Location</string>
     <string name="update_time_summary">Location update time</string>
     <string name="update_track_color">Change track color</string>
+    <string name="distance_meter">Distance %s m</string>
+    <string name="distance_kilometer">Distance %s km</string>
+    <string name="speed">Speed %s km/h</string>
 </resources>
