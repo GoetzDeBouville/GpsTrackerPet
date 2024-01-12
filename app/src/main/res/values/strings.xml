@@ -12,4 +12,8 @@
     <string name="distance_kilometer">Distance %s km</string>
     <string name="speed">Speed %s km/h</string>
     <string name="average_speed">Average speed %s km/h</string>
+    <string name="save_this_track">Save this track?</string>
+    <string name="total_time">Total time %S</string>
+    <string name="discard">Discard</string>
+    <string name="save">Save</string>
 </resources>

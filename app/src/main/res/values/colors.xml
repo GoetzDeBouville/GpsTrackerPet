@@ -2,6 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#42B0FFDA</color>
+    <color name="red">#42FFB7A9</color>
+    <color name="cardview_color">#42D7E3FF</color>
     <color name="text_color">#1A1B22</color>
 
 </resources>
