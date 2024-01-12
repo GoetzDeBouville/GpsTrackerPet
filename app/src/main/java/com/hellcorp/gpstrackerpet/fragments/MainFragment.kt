@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -19,7 +20,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
 import com.hellcorp.gpstrackerpet.MainViewModel
@@ -33,12 +33,16 @@ import com.hellcorp.gpstrackerpet.utils.checkPermission
 import com.hellcorp.gpstrackerpet.utils.showSnackbar
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import java.util.Timer
 import java.util.TimerTask
 
 class MainFragment : Fragment() {
+    private var polyline: Polyline? = null
+    private var trackIsDrawned = false
     private var isServiceLocationEnabled = false
     private var timer: Timer? = null
     private var startTime = 0L
@@ -76,6 +80,12 @@ class MainFragment : Fragment() {
         updateLocation()
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        LocalBroadcastManager.getInstance(activity as AppCompatActivity)
+            .unregisterReceiver(broadcastReceiver)
+    }
+
     private fun setOnClickListener() = with(binding) {
         val listener = onClickListener()
         btnCenter.setOnClickListener(listener)
@@ -101,6 +111,7 @@ class MainFragment : Fragment() {
             tvCurrentVelocity.text =
                 getString(R.string.speed, String.format("%.1f", it.velocity * 3.6))
             tvAverageVelocity.text = getString(R.string.average_speed, getAverageSpeed(it.distance))
+            updatePolyline(it.geoPointList)
         }
     }
 
@@ -180,6 +191,8 @@ class MainFragment : Fragment() {
     }
 
     private fun initOsm() = with(binding) {
+        polyline = Polyline()
+        polyline?.outlinePaint?.color = Color.BLUE
         map.controller.setZoom(20.0)
         val locationProvider = GpsMyLocationProvider(activity)
         val locationOverlay = MyLocationNewOverlay(locationProvider, map)
@@ -188,6 +201,26 @@ class MainFragment : Fragment() {
         locationOverlay.runOnFirstFix {
             map.overlays.clear()
             map.overlays.add(locationOverlay)
+            map.overlays.add(polyline)
+        }
+    }
+
+    private fun addTrackPoint(list: List<GeoPoint>) {
+        polyline?.addPoint(list.last())
+    }
+
+    private fun drawTrackLine(list: List<GeoPoint>) {
+        list.forEach {
+            polyline?.addPoint(it)
+        }
+    }
+
+    private fun updatePolyline(list: List<GeoPoint>) {
+        if (list.size > 1 && !trackIsDrawned) {
+            drawTrackLine(list)
+            trackIsDrawned = true
+        } else {
+            addTrackPoint(list)
         }
     }
 
