@@ -100,6 +100,7 @@ class MainFragment : Fragment() {
             tvDistance.text = formatDistance(it.distance)
             tvCurrentVelocity.text =
                 getString(R.string.speed, String.format("%.1f", it.velocity * 3.6))
+            tvAverageVelocity.text = getString(R.string.average_speed, getAverageSpeed(it.distance))
         }
     }
 
@@ -134,6 +135,12 @@ class MainFragment : Fragment() {
     private fun getCurrentTime(): String {
         return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
     }
+
+    private fun getAverageSpeed(distance: Float) = String.format(
+        "%.1f",
+        3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000f))
+    )
+
 
     private fun startStopService() {
         if (isServiceLocationEnabled) {

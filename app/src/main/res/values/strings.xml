@@ -11,4 +11,5 @@
     <string name="distance_meter">Distance %s m</string>
     <string name="distance_kilometer">Distance %s km</string>
     <string name="speed">Speed %s km/h</string>
+    <string name="average_speed">Average speed %s km/h</string>
 </resources>
