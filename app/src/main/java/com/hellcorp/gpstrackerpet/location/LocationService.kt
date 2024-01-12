@@ -37,11 +37,11 @@ class LocationService : Service() {
             super.onLocationResult(locationResult)
             val currentLocation = locationResult.lastLocation
             if (lastLocation != null && currentLocation != null) {
-//                if(currentLocation.speed > 0.3) { // TODO раскоментить для физического устройства
-//                    distance += lastLocation!!.distanceTo(currentLocation)
-//                }
+                if (currentLocation.speed > 0.3) { // TODO раскоментить для физического устройства
+                    distance += lastLocation!!.distanceTo(currentLocation)
+                }
                 geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
-                distance += lastLocation!!.distanceTo(currentLocation) // TODO удалить после роскомментирования условия
+//                distance += lastLocation!!.distanceTo(currentLocation) // TODO удалить после роскомментирования условия
                 val locationModule = LocationModel(
                     currentLocation.speed,
                     distance,

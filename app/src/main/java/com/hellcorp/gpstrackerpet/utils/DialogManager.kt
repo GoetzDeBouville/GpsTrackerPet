@@ -2,6 +2,15 @@ package com.hellcorp.gpstrackerpet.utils
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
+import android.view.LayoutInflater
+import android.view.View
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
+import com.hellcorp.gpstrackerpet.MainActivityBlur
+import com.hellcorp.gpstrackerpet.databinding.SaveDialogBinding
 
 object DialogManager {
     fun showLocationEnableDialog(context: Context, listener: Listener) {
@@ -14,6 +23,40 @@ object DialogManager {
         }
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No") { _, _ -> }
         dialog.show()
+    }
+
+    fun showSaveTrackDialog(context: Context, parent: View, listener: Listener) {
+        val builder = AlertDialog.Builder(context)
+        val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
+        builder.setView(binding.root)
+        val dialog = builder.create()
+        binding.apply {
+            btnSave.setOnClickListener {
+                listener.onClick()
+                clearBlur(context, parent)
+                dialog.dismiss()
+            }
+            btnDiscard.setOnClickListener {
+                clearBlur(context, parent)
+                dialog.dismiss()
+            }
+        }
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setOnCancelListener {
+            clearBlur(context, parent)
+        }
+        applyBlur(context, parent)
+        dialog.show()
+    }
+
+    private fun applyBlur(context: Context, parent: View) {
+        parent.applyBlurEffect()
+        (context as? MainActivityBlur)?.applyBlurEffect()
+    }
+
+    private fun clearBlur(context: Context, parent: View) {
+        parent.clearBlurEffect()
+        (context as? MainActivityBlur)?.clearBlurEffect()
     }
 
     interface Listener {

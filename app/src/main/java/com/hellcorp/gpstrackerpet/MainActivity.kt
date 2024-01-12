@@ -6,9 +6,11 @@ import com.hellcorp.gpstrackerpet.databinding.ActivityMainBinding
 import com.hellcorp.gpstrackerpet.fragments.MainFragment
 import com.hellcorp.gpstrackerpet.fragments.SettingsFragment
 import com.hellcorp.gpstrackerpet.fragments.ViewTrackFragment
+import com.hellcorp.gpstrackerpet.utils.applyBlurEffect
+import com.hellcorp.gpstrackerpet.utils.clearBlurEffect
 import com.hellcorp.gpstrackerpet.utils.openFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainActivityBlur {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,5 +29,13 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    override fun applyBlurEffect() {
+        binding.bottomNavigationView.applyBlurEffect()
+    }
+
+    override fun clearBlurEffect() {
+        binding.bottomNavigationView.clearBlurEffect()
     }
 }

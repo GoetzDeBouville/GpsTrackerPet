@@ -158,6 +158,11 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_start_track_24)
             stopTimer()
+            DialogManager.showSaveTrackDialog(requireContext(), binding.root, object : DialogManager.Listener {
+                override fun onClick() {
+                    showSnackbar(binding.root, "Track saved", requireContext())
+                }
+            })
         } else {
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_pause_track_24)
             startLocationService()
