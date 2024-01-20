@@ -11,6 +11,7 @@ import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import com.hellcorp.gpstrackerpet.MainActivityBlur
 import com.hellcorp.gpstrackerpet.databinding.SaveDialogBinding
+import com.hellcorp.gpstrackerpet.domain.TrackItem
 
 object DialogManager {
     fun showLocationEnableDialog(context: Context, listener: Listener) {
@@ -25,12 +26,15 @@ object DialogManager {
         dialog.show()
     }
 
-    fun showSaveTrackDialog(context: Context, parent: View, listener: Listener) {
+    fun showSaveTrackDialog(context: Context, track: TrackItem?, parent: View, listener: Listener) {
         val builder = AlertDialog.Builder(context)
         val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
         builder.setView(binding.root)
         val dialog = builder.create()
         binding.apply {
+            tvTime.text = track?.time
+            tvAverageSpeed.text = track?.averageSpeed
+            tvDistance.text = track?.distance
             btnSave.setOnClickListener {
                 listener.onClick()
                 clearBlur(context, parent)

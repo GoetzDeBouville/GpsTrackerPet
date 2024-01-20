@@ -25,6 +25,7 @@ import com.google.gson.Gson
 import com.hellcorp.gpstrackerpet.MainViewModel
 import com.hellcorp.gpstrackerpet.R
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
+import com.hellcorp.gpstrackerpet.domain.TrackItem
 import com.hellcorp.gpstrackerpet.location.LocationModel
 import com.hellcorp.gpstrackerpet.location.LocationService
 import com.hellcorp.gpstrackerpet.utils.DialogManager
@@ -41,6 +42,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 class MainFragment : Fragment() {
+    private var trackItem: TrackItem? = null
     private var polyline: Polyline? = null
     private var trackIsDrawned = false
     private var isServiceLocationEnabled = false
@@ -111,6 +113,14 @@ class MainFragment : Fragment() {
             tvCurrentVelocity.text =
                 getString(R.string.speed, String.format("%.1f", it.velocity * 3.6))
             tvAverageVelocity.text = getString(R.string.average_speed, getAverageSpeed(it.distance))
+            trackItem = TrackItem(
+                null,
+                getCurrentTime(),
+                TimeUtils.getCurrentDate(),
+                formatDistanceShortString(it.distance),
+                getAverageSpeed(it.distance) + " km/h",
+                ""
+            )
             updatePolyline(it.geoPointList)
         }
     }
@@ -122,6 +132,15 @@ class MainFragment : Fragment() {
             getString(R.string.distance_kilometer, String.format("%.1f", distance / 1000))
         }
 
+        return distanceFormat
+    }
+
+    private fun formatDistanceShortString(distance: Float): String {
+        val distanceFormat = if (distance < 1000f) {
+            String.format("%.1f", distance) + " m"
+        } else {
+            String.format("%.1f", distance / 1000) + " km"
+        }
         return distanceFormat
     }
 
@@ -158,11 +177,14 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_start_track_24)
             stopTimer()
-            DialogManager.showSaveTrackDialog(requireContext(), binding.root, object : DialogManager.Listener {
-                override fun onClick() {
-                    showSnackbar(binding.root, "Track saved", requireContext())
-                }
-            })
+            DialogManager.showSaveTrackDialog(requireContext(),
+                trackItem,
+                binding.root,
+                object : DialogManager.Listener {
+                    override fun onClick() {
+                        showSnackbar(binding.root, "Track saved", requireContext())
+                    }
+                })
         } else {
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_pause_track_24)
             startLocationService()
