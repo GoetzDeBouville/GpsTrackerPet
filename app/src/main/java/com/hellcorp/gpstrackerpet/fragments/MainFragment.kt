@@ -42,7 +42,8 @@ import java.util.Timer
 import java.util.TimerTask
 
 class MainFragment : Fragment() {
-    private var trackItem: TrackItem? = null
+//    private var trackItem: TrackItem? = null
+    private var locationModel: LocationModel? = null
     private var polyline: Polyline? = null
     private var trackIsDrawned = false
     private var isServiceLocationEnabled = false
@@ -113,14 +114,7 @@ class MainFragment : Fragment() {
             tvCurrentVelocity.text =
                 getString(R.string.speed, String.format("%.1f", it.velocity * 3.6))
             tvAverageVelocity.text = getString(R.string.average_speed, getAverageSpeed(it.distance))
-            trackItem = TrackItem(
-                null,
-                getCurrentTime(),
-                TimeUtils.getCurrentDate(),
-                formatDistanceShortString(it.distance),
-                getAverageSpeed(it.distance) + " km/h",
-                ""
-            )
+            locationModel = it
             updatePolyline(it.geoPointList)
         }
     }
@@ -171,6 +165,14 @@ class MainFragment : Fragment() {
         3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000f))
     )
 
+    private fun getGeopointListString(points: List<GeoPoint>) : String {
+        val geoPointsString = StringBuilder()
+        points.forEach {
+            geoPointsString.append("${it.latitude};${it.longitude}/")
+        }
+        Log.i("MyLog", "Points $geoPointsString")
+        return geoPointsString.toString()
+    }
 
     private fun startStopService() {
         if (isServiceLocationEnabled) {
@@ -178,7 +180,7 @@ class MainFragment : Fragment() {
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_start_track_24)
             stopTimer()
             DialogManager.showSaveTrackDialog(requireContext(),
-                trackItem,
+                getTrackItem(),
                 binding.root,
                 object : DialogManager.Listener {
                     override fun onClick() {
@@ -194,6 +196,16 @@ class MainFragment : Fragment() {
         isServiceLocationEnabled = !isServiceLocationEnabled
     }
 
+    private fun getTrackItem() : TrackItem {
+        return TrackItem(
+            null,
+            getCurrentTime(),
+            TimeUtils.getCurrentDate(),
+            formatDistanceShortString(locationModel?.distance ?: 0f),
+            getAverageSpeed(locationModel?.distance ?: 0f) + " km/h",
+            getGeopointListString(locationModel?.geoPointList ?: listOf())
+        )
+    }
     private fun startLocationService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity?.startForegroundService(Intent(activity, LocationService::class.java))
