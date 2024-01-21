@@ -85,9 +85,6 @@ class MainFragment : Fragment() {
         updateTimeTV()
         registerLocReciever()
         updateLocation()
-        viewModel.trackList.observe(viewLifecycleOwner) {
-            Log.i("MyLog", "List size: ${it.size}")
-        }
     }
 
     override fun onDetach() {

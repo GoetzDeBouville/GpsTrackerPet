@@ -10,6 +10,7 @@ import com.hellcorp.gpstrackerpet.data.MainDB
 import com.hellcorp.gpstrackerpet.data.db.TrackItemEntity
 import com.hellcorp.gpstrackerpet.domain.TrackItem
 import com.hellcorp.gpstrackerpet.location.LocationModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
@@ -18,7 +19,11 @@ class MainViewModel(db: MainDB, converterDB: ConverterDB): ViewModel() {
     val converter = converterDB
     val locationUpdates = MutableLiveData<LocationModel>()
     val timeData = MutableLiveData<String>()
-    val trackList = trackDAO.getTrackList().asLiveData()
+    val trackList = trackDAO.getTrackList().map {list ->
+        list.map {
+            converterDB.map(it)
+        }
+    }.asLiveData()
 
     class VMFactory(private val db: MainDB, private val converterDb: ConverterDB) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
