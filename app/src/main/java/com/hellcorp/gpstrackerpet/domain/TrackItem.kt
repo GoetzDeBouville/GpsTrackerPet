@@ -6,5 +6,5 @@ data class TrackItem(
     val date: String,
     val distance: String,
     val averageSpeed: String,
-    val geopoint: String
+    val geopoints: String
 )

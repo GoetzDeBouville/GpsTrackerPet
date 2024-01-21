@@ -14,6 +14,8 @@ import com.hellcorp.gpstrackerpet.databinding.FragmentViewTrackBinding
 import com.hellcorp.gpstrackerpet.domain.TrackItem
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Polyline
 
 class ViewTrackFragment : Fragment() {
     private var _bindng: FragmentViewTrackBinding? = null
@@ -57,6 +59,26 @@ class ViewTrackFragment : Fragment() {
             tvDistance.text = distance
             tvTime.text = time
         }
+        val polyline = getPolyline(trackItem.geopoints)
+        map.overlays.add(polyline)
+        goToStartPosition(polyline.actualPoints[0])
+    }
+
+    private fun goToStartPosition(startPosition: GeoPoint) {
+        binding.map.controller.zoomTo(18.0)
+        binding.map.controller.animateTo(startPosition)
+    }
+
+    private fun getPolyline(geopoints: String) : Polyline {
+        val polyline = Polyline()
+        val list = geopoints.split("/")
+        list.forEach {
+            if (it.isNotEmpty()) {
+                val point = it.split(";")
+                polyline.addPoint(GeoPoint(point[0].toDouble(), point[1].toDouble()))
+            }
+        }
+        return polyline
     }
 
     companion object {

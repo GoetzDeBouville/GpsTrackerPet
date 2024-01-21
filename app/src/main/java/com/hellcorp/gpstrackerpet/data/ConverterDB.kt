@@ -10,7 +10,7 @@ class ConverterDB {
         date = track.date,
         distance = track.distance,
         averageSpeed = track.averageSpeed,
-        geopoint = track.geopoint
+        geopoint = track.geopoints
     )
 
     fun map(track: TrackItemEntity) = TrackItem(
@@ -19,6 +19,6 @@ class ConverterDB {
         date = track.date,
         distance = track.distance,
         averageSpeed = track.averageSpeed,
-        geopoint = track.geopoint
+        geopoints = track.geopoint
     )
 }
