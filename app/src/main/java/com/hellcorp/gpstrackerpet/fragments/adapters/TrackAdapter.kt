@@ -10,13 +10,18 @@ import com.hellcorp.gpstrackerpet.R
 import com.hellcorp.gpstrackerpet.databinding.ItemTrackBinding
 import com.hellcorp.gpstrackerpet.domain.TrackItem
 
-class TrackAdapter(private val listener: Listener) : ListAdapter<TrackItem, TrackAdapter.TrackViewHolder>(Comparator) {
-    class TrackViewHolder(view: View, private val listener: Listener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+class TrackAdapter(private val listener: Listener) :
+    ListAdapter<TrackItem, TrackAdapter.TrackViewHolder>(Comparator) {
+    class TrackViewHolder(view: View, private val listener: Listener) :
+        RecyclerView.ViewHolder(view), View.OnClickListener {
         private val binding = ItemTrackBinding.bind(view)
-        private var trackTemp : TrackItem? = null
+        private var trackTemp: TrackItem? = null
+
         init {
             binding.ibDelete.setOnClickListener(this)
+            binding.root.setOnClickListener(this)
         }
+
         fun bind(track: TrackItem) = with(binding) {
             trackTemp = track
             with(track) {
@@ -27,8 +32,13 @@ class TrackAdapter(private val listener: Listener) : ListAdapter<TrackItem, Trac
             }
         }
 
-        override fun onClick(v: View?) {
-            trackTemp?.let { listener.onClick(it) }
+        override fun onClick(view: View?) {
+            val type = when (view) {
+                binding.ibDelete -> ClickType.DELETE
+                else -> ClickType.OPEN
+            }
+            trackTemp?.let { listener.onClick(it, type) }
+
         }
     }
 
@@ -53,6 +63,11 @@ class TrackAdapter(private val listener: Listener) : ListAdapter<TrackItem, Trac
     }
 
     interface Listener {
-        fun onClick(track: TrackItem)
+        fun onClick(track: TrackItem, type: ClickType)
+    }
+
+    enum class ClickType {
+        DELETE,
+        OPEN
     }
 }
