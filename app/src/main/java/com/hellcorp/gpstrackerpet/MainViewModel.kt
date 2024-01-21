@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(db: MainDB, converterDB: ConverterDB): ViewModel() {
     val trackDAO = db.getDao()
     val converter = converterDB
+    val currentTrack = MutableLiveData<TrackItem>()
     val locationUpdates = MutableLiveData<LocationModel>()
     val timeData = MutableLiveData<String>()
     val trackList = trackDAO.getTrackList().map {list ->
@@ -44,5 +45,9 @@ class MainViewModel(db: MainDB, converterDB: ConverterDB): ViewModel() {
         viewModelScope.launch {
             trackItem.id?.let { trackDAO.removeTrack(it) }
         }
+    }
+
+    fun setCurreantTrack(trackItem: TrackItem) {
+        currentTrack.value = trackItem
     }
 }

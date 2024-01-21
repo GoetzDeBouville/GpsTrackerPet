@@ -44,7 +44,6 @@ import java.util.Timer
 import java.util.TimerTask
 
 class MainFragment : Fragment() {
-//    private var trackItem: TrackItem? = null
     private var locationModel: LocationModel? = null
     private var polyline: Polyline? = null
     private var trackIsDrawned = false
@@ -348,7 +347,7 @@ class MainFragment : Fragment() {
     }
 
     companion object {
-        private const val OSM_KEY = "osm_pref"
+        const val OSM_KEY = "osm_pref"
 
         @JvmStatic
         fun newInstance() = MainFragment()

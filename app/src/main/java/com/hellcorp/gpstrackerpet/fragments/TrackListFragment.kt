@@ -65,6 +65,7 @@ class TrackListFragment : Fragment(), TrackAdapter.Listener {
             showSnackbar(binding.root, "Track successfuly deleted", requireContext())
             viewModel.removeTrackFromDb(track)
         } else {
+            viewModel.setCurreantTrack(track)
             openFragment(ViewTrackFragment.newInstance())
         }
     }
