@@ -39,4 +39,10 @@ class MainViewModel(db: MainDB, converterDB: ConverterDB): ViewModel() {
             trackDAO.insertTrack(converter.map(trackItem))
         }
     }
+
+    fun removeTrackFromDb(trackItem: TrackItem) {
+        viewModelScope.launch {
+            trackItem.id?.let { trackDAO.removeTrack(it) }
+        }
+    }
 }

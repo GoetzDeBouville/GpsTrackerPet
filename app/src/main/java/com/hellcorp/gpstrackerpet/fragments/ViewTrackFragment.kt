@@ -12,14 +12,19 @@ import com.hellcorp.gpstrackerpet.App
 import com.hellcorp.gpstrackerpet.MainViewModel
 import com.hellcorp.gpstrackerpet.data.ConverterDB
 import com.hellcorp.gpstrackerpet.databinding.FragmentViewTrackBinding
+import com.hellcorp.gpstrackerpet.domain.TrackItem
 import com.hellcorp.gpstrackerpet.fragments.adapters.TrackAdapter
+import com.hellcorp.gpstrackerpet.utils.showSnackbar
 
-class ViewTrackFragment : Fragment() {
-    private var _bindng : FragmentViewTrackBinding? = null
+class ViewTrackFragment : Fragment(), TrackAdapter.Listener {
+    private var _bindng: FragmentViewTrackBinding? = null
     private val binding get() = _bindng!!
     private lateinit var adapter: TrackAdapter
     private val viewModel: MainViewModel by activityViewModels {
-        MainViewModel.VMFactory((requireContext().applicationContext as App).database, ConverterDB())
+        MainViewModel.VMFactory(
+            (requireContext().applicationContext as App).database,
+            ConverterDB()
+        )
     }
 
     override fun onCreateView(
@@ -45,7 +50,7 @@ class ViewTrackFragment : Fragment() {
     }
 
     private fun initAdapter() = with(binding) {
-        adapter = TrackAdapter()
+        adapter = TrackAdapter(this@ViewTrackFragment)
         rvTracklist.layoutManager = LinearLayoutManager(requireContext())
         rvTracklist.adapter = adapter
     }
@@ -53,5 +58,10 @@ class ViewTrackFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = ViewTrackFragment()
+    }
+
+    override fun onClick(track: TrackItem) {
+        viewModel.removeTrackFromDb(track)
+        showSnackbar(binding.root, "Track successfuly deleted", requireContext())
     }
 }
