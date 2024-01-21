@@ -22,8 +22,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
+import com.hellcorp.gpstrackerpet.App
 import com.hellcorp.gpstrackerpet.MainViewModel
 import com.hellcorp.gpstrackerpet.R
+import com.hellcorp.gpstrackerpet.data.ConverterDB
 import com.hellcorp.gpstrackerpet.databinding.FragmentMainBinding
 import com.hellcorp.gpstrackerpet.domain.TrackItem
 import com.hellcorp.gpstrackerpet.location.LocationModel
@@ -49,7 +51,9 @@ class MainFragment : Fragment() {
     private var isServiceLocationEnabled = false
     private var timer: Timer? = null
     private var startTime = 0L
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels {
+        MainViewModel.VMFactory((requireContext().applicationContext as App).database, ConverterDB())
+    }
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
@@ -81,6 +85,9 @@ class MainFragment : Fragment() {
         updateTimeTV()
         registerLocReciever()
         updateLocation()
+        viewModel.trackList.observe(viewLifecycleOwner) {
+            Log.i("MyLog", "List size: ${it.size}")
+        }
     }
 
     override fun onDetach() {
@@ -179,12 +186,14 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.btnStartStopTrack.setImageResource(R.drawable.ic_start_track_24)
             stopTimer()
+            val trackItem = getTrackItem()
             DialogManager.showSaveTrackDialog(requireContext(),
-                getTrackItem(),
+                trackItem,
                 binding.root,
                 object : DialogManager.Listener {
                     override fun onClick() {
                         showSnackbar(binding.root, "Track saved", requireContext())
+                        viewModel.saveTrackToDb(trackItem)
                     }
                 })
         } else {

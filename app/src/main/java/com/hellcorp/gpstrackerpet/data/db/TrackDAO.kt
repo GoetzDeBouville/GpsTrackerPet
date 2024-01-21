@@ -3,6 +3,7 @@ package com.hellcorp.gpstrackerpet.data.db
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TrackDAO {
@@ -13,5 +14,8 @@ interface TrackDAO {
     suspend fun removeTrack(trackId: Int)
 
     @Query("SELECT * FROM track_item WHERE id = :trackId")
-    suspend fun getTrack(trackId: Int) : TrackItemEntity
+    suspend fun getTrack(trackId: Int): TrackItemEntity
+
+    @Query("SELECT * FROM track_item")
+    fun getTrackList(): Flow<List<TrackItemEntity>>
 }
