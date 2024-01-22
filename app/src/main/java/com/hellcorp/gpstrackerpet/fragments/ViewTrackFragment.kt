@@ -5,16 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.hellcorp.gpstrackerpet.App
 import com.hellcorp.gpstrackerpet.MainViewModel
+import com.hellcorp.gpstrackerpet.R
 import com.hellcorp.gpstrackerpet.data.ConverterDB
 import com.hellcorp.gpstrackerpet.databinding.FragmentViewTrackBinding
 import com.hellcorp.gpstrackerpet.domain.TrackItem
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 
 class ViewTrackFragment : Fragment() {
@@ -61,12 +64,26 @@ class ViewTrackFragment : Fragment() {
         }
         val polyline = getPolyline(trackItem.geopoints)
         map.overlays.add(polyline)
+        setMarkers(polyline.actualPoints)
         goToStartPosition(polyline.actualPoints[0])
     }
 
     private fun goToStartPosition(startPosition: GeoPoint) {
         binding.map.controller.zoomTo(18.0)
         binding.map.controller.animateTo(startPosition)
+    }
+
+    private fun setMarkers(list : List<GeoPoint>) = with(binding) {
+        val startMarker = Marker(map)
+        val finishMarker = Marker(map)
+        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        finishMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        startMarker.icon = getDrawable(requireContext(), R.drawable.ic_start)
+        finishMarker.icon = getDrawable(requireContext(), R.drawable.ic_finish)
+        startMarker.position = list[0]
+        finishMarker.position = list.last()
+        map.overlays.add(startMarker)
+        map.overlays.add(finishMarker)
     }
 
     private fun getPolyline(geopoints: String) : Polyline {
