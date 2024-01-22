@@ -68,7 +68,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     companion object {
         private const val TIME_KEY = "update_time_key"
-        private const val COLOR_TRACK_KEY = "track_color_key"
+        const val COLOR_TRACK_KEY = "track_color_key"
         private const val DEFAULT_COLOR = "#2962FF"
         private const val UPDATE_TIME_3_SEC = "3000"
     }

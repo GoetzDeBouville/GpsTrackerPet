@@ -1,13 +1,16 @@
 package com.hellcorp.gpstrackerpet.fragments
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import com.hellcorp.gpstrackerpet.App
 import com.hellcorp.gpstrackerpet.MainViewModel
 import com.hellcorp.gpstrackerpet.R
@@ -23,6 +26,7 @@ import org.osmdroid.views.overlay.Polyline
 class ViewTrackFragment : Fragment() {
     private var _bindng: FragmentViewTrackBinding? = null
     private val binding get() = _bindng!!
+    private var startPosition: GeoPoint? = null
     private val viewModel: MainViewModel by activityViewModels {
         MainViewModel.VMFactory(
             (requireContext().applicationContext as App).database,
@@ -44,6 +48,9 @@ class ViewTrackFragment : Fragment() {
         viewModel.currentTrack.observe(viewLifecycleOwner) {
             fetchData(it)
         }
+        binding.btnCenter.setOnClickListener {
+            binding.map.controller.animateTo(startPosition)
+        }
     }
 
     private fun setOsm() {
@@ -63,17 +70,22 @@ class ViewTrackFragment : Fragment() {
             tvTime.text = time
         }
         val polyline = getPolyline(trackItem.geopoints)
+        polyline.outlinePaint.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString(SettingsFragment.COLOR_TRACK_KEY, "FF000000")
+        )
         map.overlays.add(polyline)
         setMarkers(polyline.actualPoints)
         goToStartPosition(polyline.actualPoints[0])
+        startPosition = polyline.actualPoints[0]
     }
 
     private fun goToStartPosition(startPosition: GeoPoint) {
-        binding.map.controller.zoomTo(18.0)
+        binding.map.controller.zoomTo(16.0)
         binding.map.controller.animateTo(startPosition)
     }
 
-    private fun setMarkers(list : List<GeoPoint>) = with(binding) {
+    private fun setMarkers(list: List<GeoPoint>) = with(binding) {
         val startMarker = Marker(map)
         val finishMarker = Marker(map)
         startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
@@ -86,7 +98,7 @@ class ViewTrackFragment : Fragment() {
         map.overlays.add(finishMarker)
     }
 
-    private fun getPolyline(geopoints: String) : Polyline {
+    private fun getPolyline(geopoints: String): Polyline {
         val polyline = Polyline()
         val list = geopoints.split("/")
         list.forEach {

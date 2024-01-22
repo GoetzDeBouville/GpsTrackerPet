@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.hellcorp.gpstrackerpet.App
 import com.hellcorp.gpstrackerpet.MainViewModel
@@ -48,6 +49,7 @@ class MainFragment : Fragment() {
     private var polyline: Polyline? = null
     private var trackIsDrawned = false
     private var isServiceLocationEnabled = false
+    private lateinit var locationOverlay: MyLocationNewOverlay
     private var timer: Timer? = null
     private var startTime = 0L
     private val viewModel: MainViewModel by activityViewModels {
@@ -96,13 +98,19 @@ class MainFragment : Fragment() {
         val listener = onClickListener()
         btnCenter.setOnClickListener(listener)
         btnStartStopTrack.setOnClickListener(listener)
+        btnCenter.setOnClickListener(listener)
     }
 
     private fun onClickListener() = View.OnClickListener {
         when (it) {
-            binding.btnCenter -> Log.i("MyLog", "btnCenter clicked")
+            binding.btnCenter -> centerLocation()
             binding.btnStartStopTrack -> startStopService()
         }
+    }
+
+    private fun centerLocation() {
+        binding.map.controller.animateTo(locationOverlay.myLocation)
+        locationOverlay.enableFollowLocation()
     }
 
     private fun updateTimeTV() {
@@ -236,10 +244,12 @@ class MainFragment : Fragment() {
 
     private fun initOsm() = with(binding) {
         polyline = Polyline()
-        polyline?.outlinePaint?.color = Color.BLUE
+        polyline?.outlinePaint?.color  = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).getString(SettingsFragment.COLOR_TRACK_KEY, "FF000000")
+        )
         map.controller.setZoom(20.0)
         val locationProvider = GpsMyLocationProvider(activity)
-        val locationOverlay = MyLocationNewOverlay(locationProvider, map)
+        locationOverlay = MyLocationNewOverlay(locationProvider, map)
         locationOverlay.enableMyLocation()
         locationOverlay.enableFollowLocation()
         locationOverlay.runOnFirstFix {
