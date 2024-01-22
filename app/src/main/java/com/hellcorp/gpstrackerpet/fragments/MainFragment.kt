@@ -53,7 +53,10 @@ class MainFragment : Fragment() {
     private var timer: Timer? = null
     private var startTime = 0L
     private val viewModel: MainViewModel by activityViewModels {
-        MainViewModel.VMFactory((requireContext().applicationContext as App).database, ConverterDB())
+        MainViewModel.VMFactory(
+            (requireContext().applicationContext as App).database,
+            ConverterDB()
+        )
     }
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     private var _binding: FragmentMainBinding? = null
@@ -62,8 +65,8 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        setOsm() // инициализация open street map обязательно до прорисовки фрагмента
         _binding = FragmentMainBinding.inflate(inflater, container, false)
+        setOsm() // инициализация open street map обязательно до прорисовки фрагмента
         return binding.root
     }
 
@@ -176,7 +179,7 @@ class MainFragment : Fragment() {
         3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000f))
     )
 
-    private fun getGeopointListString(points: List<GeoPoint>) : String {
+    private fun getGeopointListString(points: List<GeoPoint>): String {
         val geoPointsString = StringBuilder()
         points.forEach {
             geoPointsString.append("${it.latitude};${it.longitude}/")
@@ -209,7 +212,7 @@ class MainFragment : Fragment() {
         isServiceLocationEnabled = !isServiceLocationEnabled
     }
 
-    private fun getTrackItem() : TrackItem {
+    private fun getTrackItem(): TrackItem {
         return TrackItem(
             null,
             getCurrentTime(),
@@ -219,6 +222,7 @@ class MainFragment : Fragment() {
             getGeopointListString(locationModel?.geoPointList ?: listOf())
         )
     }
+
     private fun startLocationService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity?.startForegroundService(Intent(activity, LocationService::class.java))
@@ -240,12 +244,15 @@ class MainFragment : Fragment() {
         Configuration.getInstance()
             .load(requireContext(), activity?.getSharedPreferences(OSM_KEY, Context.MODE_PRIVATE))
         Configuration.getInstance().userAgentValue = BuildConfig.LIBRARY_PACKAGE_NAME
+
+        binding.map.setMultiTouchControls(true)
     }
 
     private fun initOsm() = with(binding) {
         polyline = Polyline()
-        polyline?.outlinePaint?.color  = Color.parseColor(
-            PreferenceManager.getDefaultSharedPreferences(requireContext()).getString(SettingsFragment.COLOR_TRACK_KEY, "FF000000")
+        polyline?.outlinePaint?.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString(SettingsFragment.COLOR_TRACK_KEY, "FF000000")
         )
         map.controller.setZoom(20.0)
         val locationProvider = GpsMyLocationProvider(activity)

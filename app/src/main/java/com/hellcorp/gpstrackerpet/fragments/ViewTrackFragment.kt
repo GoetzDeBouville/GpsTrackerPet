@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -20,6 +21,8 @@ import com.hellcorp.gpstrackerpet.domain.TrackItem
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 
@@ -38,9 +41,14 @@ class ViewTrackFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setOsm()
         _bindng = FragmentViewTrackBinding.inflate(inflater, container, false)
+        setOsm()
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bindng = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,6 +68,8 @@ class ViewTrackFragment : Fragment() {
                 activity?.getSharedPreferences(MainFragment.OSM_KEY, Context.MODE_PRIVATE)
             )
         Configuration.getInstance().userAgentValue = BuildConfig.LIBRARY_PACKAGE_NAME
+
+        binding.map.setMultiTouchControls(true)
     }
 
     private fun fetchData(trackItem: TrackItem) = with(binding) {
