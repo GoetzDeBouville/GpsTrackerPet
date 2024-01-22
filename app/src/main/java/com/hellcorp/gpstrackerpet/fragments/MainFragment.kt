@@ -78,6 +78,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkLocationPermission()
+        trackIsDrawned = false
     }
 
 

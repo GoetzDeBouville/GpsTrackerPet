@@ -15,6 +15,7 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -24,6 +25,8 @@ import com.google.android.gms.location.Priority
 import com.google.gson.Gson
 import com.hellcorp.gpstrackerpet.MainActivity
 import com.hellcorp.gpstrackerpet.R
+import com.hellcorp.gpstrackerpet.fragments.MainFragment
+import com.hellcorp.gpstrackerpet.fragments.SettingsFragment
 import org.osmdroid.util.GeoPoint
 
 class LocationService : Service() {
@@ -37,7 +40,7 @@ class LocationService : Service() {
             super.onLocationResult(locationResult)
             val currentLocation = locationResult.lastLocation
             if (lastLocation != null && currentLocation != null) {
-//                if (currentLocation.speed > 0.2) { // TODO раскоментить для физического устройства
+//                if (currentLocation.speed > 0.3) { // TODO раскоментить для физического устройства
 //                    distance += lastLocation!!.distanceTo(currentLocation)
 //                }
                 geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
@@ -121,7 +124,9 @@ class LocationService : Service() {
     }
 
     private fun startLocationUpdate() {
-        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000)
+        val updateIntervalMs = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(SettingsFragment.TIME_KEY, "3000 ")?.toLong() ?: 3000
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, updateIntervalMs)
             .build()
         if (ActivityCompat.checkSelfPermission(
                 this,
