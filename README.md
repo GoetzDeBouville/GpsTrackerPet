@@ -5,8 +5,8 @@
 GpsTrackerPet build with [OpenStreetMap](https://www.openstreetmap.org/) <br>
 The app is dedicated to for GPS tracking.
 Implemented options for background G{S-tracking, drawing the track on the map, collecting tracks and it's data in database.
-
-Stack: 
+<br>
+### Stack: 
 - [Android Studio](https://developer.android.com/studio/intro)
 - Coroutines + Flow
 - Arcitecture: MVVM, Single Activity + Android Navigation,
