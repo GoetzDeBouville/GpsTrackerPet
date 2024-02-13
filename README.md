@@ -18,7 +18,7 @@ Stack:
 ## Screencast
 [![](https://img.shields.io/badge/YouTube-0077B5?style=for-the-badge&logo=youtube&logoColor=red)](https://www.youtube.com/watch?v=5mJkLbTtqOA)
 
-<img src="./screenshots/001.gif" width="240" height="480">    <img src="./screenshots/002.gif" width="240" height="480">    
+<img src="./screenshots/001.gif" width="240" height="480">    <img src="./screenshots/004.gif" width="240" height="480">    
 <img src="./screenshots/003.gif" width="240" height="480">
 
 
